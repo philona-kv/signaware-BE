@@ -1,22 +1,22 @@
+import { UserRole } from "@/common/enums/user-role.enum";
+import { ChatMessage } from "@/modules/chat/entities/chat-message.entity";
+import { Document } from "@/modules/documents/entities/document.entity";
+import * as bcrypt from "bcryptjs";
+import { Exclude } from "class-transformer";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
   OneToMany,
-} from 'typeorm';
-import { Exclude } from 'class-transformer';
-import * as bcrypt from 'bcryptjs';
-import { UserRole } from '@/common/enums/user-role.enum';
-import { Document } from '@/modules/documents/entities/document.entity';
-import { ChatMessage } from '@/modules/chat/entities/chat-message.entity';
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
-@Entity('users')
+@Entity("users")
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ unique: true })
@@ -33,7 +33,7 @@ export class User {
   lastName?: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: UserRole,
     default: UserRole.CUSTOMER,
   })
@@ -89,6 +89,8 @@ export class User {
   }
 
   get fullName(): string {
-    return `${this.firstName || ''} ${this.lastName || ''}`.trim() || this.email;
+    return (
+      `${this.firstName || ""} ${this.lastName || ""}`.trim() || this.email
+    );
   }
-} 
+}

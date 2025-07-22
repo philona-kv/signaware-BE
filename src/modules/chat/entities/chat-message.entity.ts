@@ -1,31 +1,31 @@
+import { Document } from "@/modules/documents/entities/document.entity";
+import { User } from "@/modules/users/entities/user.entity";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
-} from 'typeorm';
-import { User } from '@/modules/users/entities/user.entity';
-import { Document } from '@/modules/documents/entities/document.entity';
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 export enum MessageRole {
-  USER = 'user',
-  ASSISTANT = 'assistant',
-  SYSTEM = 'system',
+  USER = "user",
+  ASSISTANT = "assistant",
+  SYSTEM = "system",
 }
 
-@Entity('chat_messages')
+@Entity("chat_messages")
 export class ChatMessage {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: "text" })
   content: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: MessageRole,
     default: MessageRole.USER,
   })
@@ -34,7 +34,7 @@ export class ChatMessage {
   @Column({ nullable: true })
   sessionId?: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   metadata?: {
     tokens?: number;
     processingTime?: number;
@@ -42,15 +42,17 @@ export class ChatMessage {
     temperature?: number;
   };
 
-  @ManyToOne(() => User, (user) => user.chatMessages, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.chatMessages, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
   user: User;
 
   @Column()
   userId: string;
 
-  @ManyToOne(() => Document, (document) => document.chatMessages, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'documentId' })
+  @ManyToOne(() => Document, (document) => document.chatMessages, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "documentId" })
   document: Document;
 
   @Column()
@@ -61,4 +63,4 @@ export class ChatMessage {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

@@ -1,40 +1,40 @@
+import { ChatMessage } from "@/modules/chat/entities/chat-message.entity";
+import { User } from "@/modules/users/entities/user.entity";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-} from 'typeorm';
-import { User } from '@/modules/users/entities/user.entity';
-import { ChatMessage } from '@/modules/chat/entities/chat-message.entity';
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 export enum DocumentStatus {
-  PENDING = 'pending',
-  PROCESSING = 'processing',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
+  PENDING = "pending",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  FAILED = "failed",
 }
 
 export enum DocumentType {
-  TERMS_OF_SERVICE = 'terms_of_service',
-  PRIVACY_POLICY = 'privacy_policy',
-  CONTRACT = 'contract',
-  AGREEMENT = 'agreement',
-  OTHER = 'other',
+  TERMS_OF_SERVICE = "terms_of_service",
+  PRIVACY_POLICY = "privacy_policy",
+  CONTRACT = "contract",
+  AGREEMENT = "agreement",
+  OTHER = "other",
 }
 
-@Entity('documents')
+@Entity("documents")
 export class Document {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
   title: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: "text" })
   content: string;
 
   @Column({ nullable: true })
@@ -50,20 +50,20 @@ export class Document {
   mimeType?: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: DocumentType,
     default: DocumentType.OTHER,
   })
   type: DocumentType;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: DocumentStatus,
     default: DocumentStatus.PENDING,
   })
   status: DocumentStatus;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   analysis?: {
     summary: string;
     riskScore: number;
@@ -74,7 +74,7 @@ export class Document {
     processingTime: number;
   };
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: "jsonb", nullable: true })
   maskedContent?: string;
 
   @Column({ nullable: true })
@@ -86,8 +86,8 @@ export class Document {
   @Column({ nullable: true })
   errorMessage?: string;
 
-  @ManyToOne(() => User, (user) => user.documents, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.documents, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "userId" })
   user: User;
 
   @Column()
@@ -101,4 +101,4 @@ export class Document {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}
