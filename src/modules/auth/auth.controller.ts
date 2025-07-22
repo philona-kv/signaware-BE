@@ -91,16 +91,5 @@ export class AuthController {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: 'Google OAuth callback' })
-  async googleAuthCallback(@Req() req, @Res() res: Response) {
-    // This endpoint handles the OAuth callback from Google
-    // In a real implementation, you would redirect to the frontend with tokens
-    const { user } = req;
-    
-    // Redirect to frontend - tokens will be handled by the frontend
-    const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback`;
-    res.redirect(redirectUrl);
-  }
+
 } 

@@ -4,7 +4,7 @@ AI-powered legal document analysis backend service built with NestJS and Postgre
 
 ## Features
 
-- 🔐 **Authentication**: JWT-based auth with Google OAuth integration
+- 🔐 **Authentication**: JWT-based auth with Firebase Authentication
 - 📄 **Document Management**: Upload and analyze legal documents
 - 🤖 **AI Analysis**: OpenAI-powered document analysis with risk assessment
 - 💬 **Real-time Chat**: SSE streaming chat with documents
@@ -16,7 +16,7 @@ AI-powered legal document analysis backend service built with NestJS and Postgre
 
 - **Framework**: NestJS
 - **Database**: PostgreSQL with TypeORM
-- **Authentication**: JWT + Google OAuth
+- **Authentication**: JWT + Firebase Authentication
 - **AI**: OpenAI GPT-4
 - **File Upload**: Multer
 - **Real-time**: Server-Sent Events (SSE)
@@ -27,7 +27,7 @@ AI-powered legal document analysis backend service built with NestJS and Postgre
 - Node.js (v16 or higher)
 - PostgreSQL (v12 or higher)
 - OpenAI API key
-- Google OAuth credentials (optional)
+- Firebase project credentials
 
 ## Installation
 
@@ -60,10 +60,10 @@ AI-powered legal document analysis backend service built with NestJS and Postgre
    JWT_SECRET=your-super-secret-jwt-key-here
    JWT_EXPIRES_IN=7d
 
-   # Google OAuth Configuration (optional)
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+   # Firebase Configuration
+   FIREBASE_PROJECT_ID=your-firebase-project-id
+   FIREBASE_CLIENT_EMAIL=your-firebase-client-email
+   FIREBASE_PRIVATE_KEY=your-firebase-private-key
 
    # OpenAI Configuration
    OPENAI_API_KEY=your-openai-api-key
@@ -109,7 +109,7 @@ http://localhost:3000/api/docs
 ### Authentication
 - `POST /api/v1/auth/signup` - User registration
 - `POST /api/v1/auth/signin` - User login
-- `POST /api/v1/auth/google` - Google OAuth authentication
+- `POST /api/v1/auth/google` - Firebase Google authentication
 - `POST /api/v1/auth/refresh` - Refresh access token
 - `POST /api/v1/auth/forgot-password` - Request password reset
 - `POST /api/v1/auth/reset-password` - Reset password

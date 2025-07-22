@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignAware Firebase Test (Ngrok)</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 4px; white-space: pre-wrap; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>SignAware API Test (Ngrok)</h1>
+    
+    <section>
+        <h2>1. Initialize Firebase</h2>
+        <button onclick="initializeFirebase()">Initialize Firebase</button>
+        <div id="init-result" class="result"></div>
+    </section>
+
+    <section>
+        <h2>2. Google Sign In</h2>
+        <button onclick="signInWithGoogle()">Sign in with Google</button>
+        <div id="signin-result" class="result"></div>
+    </section>
+
+    <section>
+        <h2>3. Test Backend Auth</h2>
+        <button onclick="testBackendAuth()">Test Backend Auth</button>
+        <div id="backend-result" class="result"></div>
+    </section>
+
+    <section>
+        <h2>4. Test Protected Endpoint</h2>
+        <button onclick="testProtectedEndpoint()">Test Protected Endpoint</button>
+        <div id="protected-result" class="result"></div>
+    </section>
+
+    <script>
+        const BACKEND_URL = 'https://ed94b47f64b4.ngrok-free.app';
+        let firebaseApp;
+        let idToken;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            authDomain: "signaware-3ef1b.firebaseapp.com",
+            projectId: "signaware-3ef1b",
+            storageBucket: "signaware-3ef1b.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+
+        async function initializeFirebase() {
+            try {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                log('init-result', '✅ Firebase initialized successfully');
+            } catch (error) {
+                log('init-result', '❌ Error: ' + error.message, true);
+            }
+        }
+
+        async function signInWithGoogle() {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await firebase.auth().signInWithPopup(provider);
+                idToken = await result.user.getIdToken();
+                log('signin-result', `✅ Signed in as ${result.user.email}\nToken: ${idToken.substring(0, 50)}...`);
+            } catch (error) {
+                log('signin-result', '❌ Error: ' + error.message, true);
+            }
+        }
+
+        async function testBackendAuth() {
+            try {
+                if (!idToken) throw new Error('Please sign in first');
+
+                const response = await fetch(`${BACKEND_URL}/api/v1/auth/google`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: idToken, role: 'customer' })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('jwtToken', data.accessToken);
+                    log('backend-result', '✅ Backend auth successful\n' + JSON.stringify(data, null, 2));
+                } else {
+                    log('backend-result', '❌ Backend auth failed\n' + JSON.stringify(data, null, 2), true);
+                }
+            } catch (error) {
+                log('backend-result', '❌ Error: ' + error.message, true);
+            }
+        }
+
+        async function testProtectedEndpoint() {
+            try {
+                const jwtToken = localStorage.getItem('jwtToken');
+                if (!jwtToken) throw new Error('No JWT token found. Please authenticate first.');
+
+                const response = await fetch(`${BACKEND_URL}/api/v1/protected`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('protected-result', '✅ Protected endpoint access successful\n' + JSON.stringify(data, null, 2));
+                } else {
+                    log('protected-result', '❌ Protected endpoint access failed\n' + JSON.stringify(data, null, 2), true);
+                }
+            } catch (error) {
+                log('protected-result', '❌ Error: ' + error.message, true);
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -108,6 +108,13 @@ uploads/
 *.sqlite
 *.db
 
+# Firebase
+*-firebase-adminsdk-*.json
+firebase-adminsdk-*.json
+
 # Temporary files
 tmp/
-temp/ 
+temp/
+
+# Test files
+firebase-test.html 

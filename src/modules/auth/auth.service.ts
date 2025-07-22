@@ -8,12 +8,13 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OAuth2Client } from 'google-auth-library';
+import * as admin from 'firebase-admin';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
 
 import { User } from '@/modules/users/entities/user.entity';
 import { UserRole } from '@/common/enums/user-role.enum';
+import { FirebaseConfig } from '@/config/firebase.config';
 import {
   SignUpDto,
   SignInDto,
@@ -27,18 +28,13 @@ import {
 
 @Injectable()
 export class AuthService {
-  private googleClient: OAuth2Client;
-
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {
-    this.googleClient = new OAuth2Client(
-      this.configService.get('GOOGLE_CLIENT_ID'),
-    );
-  }
+    private firebaseConfig: FirebaseConfig,
+  ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<AuthResponseDto> {
     const { email, password, firstName, lastName, role } = signUpDto;
@@ -104,17 +100,16 @@ export class AuthService {
     const { token, role } = googleAuthDto;
 
     try {
-      const ticket = await this.googleClient.verifyIdToken({
-        idToken: token,
-        audience: this.configService.get('GOOGLE_CLIENT_ID'),
-      });
-
-      const payload = ticket.getPayload();
-      if (!payload) {
-        throw new UnauthorizedException('Invalid Google token');
+      // Verify Firebase ID token
+      const decodedToken = await this.firebaseConfig.getAuth().verifyIdToken(token);
+      
+      if (!decodedToken) {
+        throw new UnauthorizedException('Invalid Firebase token');
       }
 
-      const { email, given_name, family_name, picture, sub } = payload;
+      const { email, name, picture, uid } = decodedToken;
+      const [firstName, ...lastNameParts] = (name || '').split(' ');
+      const lastName = lastNameParts.join(' ');
 
       let user = await this.userRepository.findOne({
         where: { email },
@@ -124,18 +119,18 @@ export class AuthService {
         // Create new user
         user = this.userRepository.create({
           email,
-          firstName: given_name,
-          lastName: family_name,
+          firstName: firstName || '',
+          lastName: lastName || '',
           avatar: picture,
-          googleId: sub,
+          googleId: uid,
           role: role || UserRole.CUSTOMER,
-          isEmailVerified: true, // Google accounts are pre-verified
+          isEmailVerified: true, // Firebase accounts are pre-verified
         });
 
         await this.userRepository.save(user);
       } else {
-        // Update existing user's Google info
-        user.googleId = sub;
+        // Update existing user's Firebase info
+        user.googleId = uid;
         user.avatar = picture;
         user.isEmailVerified = true;
         user.lastLoginAt = new Date();
@@ -149,7 +144,8 @@ export class AuthService {
         user: this.sanitizeUser(user),
       };
     } catch (error) {
-      throw new UnauthorizedException('Invalid Google token');
+      console.error('Firebase auth error:', error);
+      throw new UnauthorizedException('Invalid Firebase token');
     }
   }
 

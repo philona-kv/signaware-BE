@@ -7,8 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
 import { User } from '@/modules/users/entities/user.entity';
+import { FirebaseConfig } from '@/config/firebase.config';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { User } from '@/modules/users/entities/user.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, JwtStrategy, FirebaseConfig],
   exports: [AuthService],
 })
 export class AuthModule {} 
