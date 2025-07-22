@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { AnalysisModule } from './modules/analysis/analysis.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AppController } from './app.controller';
 
 import { TypeOrmConfig } from './config/typeorm.config';
@@ -29,6 +30,7 @@ import { TypeOrmConfig } from './config/typeorm.config';
     DocumentsModule,
     ChatModule,
     AnalysisModule,
+    DashboardModule,
   ],
   controllers: [AppController],
 })

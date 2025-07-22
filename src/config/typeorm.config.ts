@@ -10,11 +10,11 @@ export class TypeOrmConfig implements TypeOrmOptionsFactory {
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       type: "postgres",
-      host: this.configService.get("DB_HOST"),
+      host: this.configService.get("DB_HOST") || process.env.DB_HOST,
       port: this.configService.get("DB_PORT", 5432),
-      username: this.configService.get("DB_USERNAME"),
-      password: this.configService.get("DB_PASSWORD"),
-      database: this.configService.get("DB_DATABASE"),
+      username: this.configService.get("DB_USERNAME") || process.env.DB_USERNAME,
+      password: this.configService.get("DB_PASSWORD") || process.env.DB_PASSWORD,
+      database: this.configService.get("DB_DATABASE") || process.env.DB_DATABASE,
       entities: [join(__dirname, "..", "**", "*.entity.{ts,js}")],
       migrations: [join(__dirname, "..", "migrations", "*.{ts,js}")],
       synchronize: true, // Auto-create tables in development

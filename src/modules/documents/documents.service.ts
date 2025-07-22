@@ -177,7 +177,7 @@ export class DocumentsService {
 
     try {
       // Perform analysis
-      const analysis = await this.analysisService.analyzeDocument(document.content);
+      const analysis = await this.analysisService.analyzeDocument(document.content, documentId, userId);
       
       // Update document with analysis results
       document.analysis = analysis;

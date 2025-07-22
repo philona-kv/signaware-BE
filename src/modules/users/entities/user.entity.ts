@@ -75,8 +75,6 @@ export class User {
   @OneToMany(() => ChatMessage, (message) => message.user)
   chatMessages: ChatMessage[];
 
-  @BeforeInsert()
-  @BeforeUpdate()
   async hashPassword() {
     if (this.password) {
       this.password = await bcrypt.hash(this.password, 12);

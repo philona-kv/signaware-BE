@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import * as admin from 'firebase-admin';
 import { v4 as uuidv4 } from 'uuid';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcryptjs';
 
 import { User } from '@/modules/users/entities/user.entity';
 import { UserRole } from '@/common/enums/user-role.enum';
@@ -48,10 +49,13 @@ export class AuthService {
       throw new ConflictException('User with this email already exists');
     }
 
+    // Hash password before creating user
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     // Create new user
     const user = this.userRepository.create({
       email,
-      password,
+      password: hashedPassword,
       firstName,
       lastName,
       role: role || UserRole.CUSTOMER,
@@ -205,7 +209,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
-    user.password = newPassword;
+    user.password = await bcrypt.hash(newPassword, 12);
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
     await this.userRepository.save(user);
