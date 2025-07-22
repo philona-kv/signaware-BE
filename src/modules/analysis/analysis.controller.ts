@@ -54,7 +54,7 @@ export class AnalysisController {
     @Body() analyzeTextDto: AnalyzeTextDto,
     @CurrentUser() user: User,
   ): Promise<any> {
-    return this.analysisService.analyzeText(analyzeTextDto.content, user.id);
+    return this.analysisService.analyzeText(analyzeTextDto.content, user.id, analyzeTextDto.analysisType);
   }
 
   @Post('summarize')
