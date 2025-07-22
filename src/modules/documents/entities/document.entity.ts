@@ -64,15 +64,7 @@ export class Document {
   status: DocumentStatus;
 
   @Column({ type: "jsonb", nullable: true })
-  analysis?: {
-    summary: string;
-    riskScore: number;
-    keyConcerns: string[];
-    loopholes: string[];
-    obligations: string[];
-    recommendations: string[];
-    processingTime: number;
-  };
+  analysis?: any;
 
   @Column({ type: "jsonb", nullable: true })
   maskedContent?: string;
